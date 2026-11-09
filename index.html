@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Griya Asri Executive Kost - Direct Booking & Panel Pemilik</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-20 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- GLOBAL NAVBAR -->
+    <header class="sticky top-0 z-40 glass-header border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 bg-gradient-to-tr from-brand-700 to-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-brand-600/20">
+                    <i class="fa-solid fa-building-user text-xl"></i>
+                </div>
+                <div>
+                    <h1 id="nav-kost-name" class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                        Griya Asri Executive
+                    </h1>
+                    <p class="text-xs text-slate-500 font-medium flex items-center gap-1">
+                        <i class="fa-solid fa-location-dot text-brand-600"></i> <span id="nav-kost-city">Sleman, Yogyakarta</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Mode Switcher (Guest vs Admin Toggle) -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div class="bg-slate-100 p-1 rounded-2xl flex items-center border border-slate-200">
+                    <button id="btn-mode-guest" onclick="switchMode('guest')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-white text-brand-700 shadow-sm">
+                        <i class="fa-solid fa-user"></i>
+                        <span class="hidden sm:inline">Mode Penyewa</span>
+                    </button>
+                    <button id="btn-mode-admin" onclick="switchMode('admin')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 text-slate-600 hover:text-slate-900">
+                        <i class="fa-solid fa-user-gear"></i>
+                        <span>Panel Pemilik</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- ================================================================================= -->
+    <!-- MODE 1: PUBLIC TENANT / GUEST VIEW -->
+    <!-- ================================================================================= -->
+    <main id="guest-view" class="flex-grow">
+        <!-- Hero Banner -->
+        <section class="relative bg-gradient-to-br from-slate-900 via-slate-800 to-brand-950 text-white py-14 md:py-20 overflow-hidden">
+            <div class="absolute -top-32 -right-32 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-7 space-y-4 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/20 border border-brand-500/40 text-brand-300 text-xs font-semibold">
+                        <i class="fa-solid fa-circle-check text-brand-400"></i> Terverifikasi Langsung Pemilik • Tanpa Biaya Perantara
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                        Sewa Kamar Nyaman di <br class="hidden sm:inline">
+                        <span id="hero-kost-name-display" class="bg-gradient-to-r from-emerald-300 to-brand-400 bg-clip-text text-transparent">Griya Asri Executive</span>
+                    </h2>
+                    <p id="hero-kost-desc" class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
+                        Kost hunian modern dengan fasilitas lengkap, lingkungan aman 24 jam, Wi-Fi kencang, dan garansi kebersihan. Siap huni untuk mahasiswa & pekerja professional.
+                    </p>
+
+                    <!-- Quick Highlights Badges -->
+                    <div class="pt-2 flex flex-wrap justify-center lg:justify-start gap-3 text-xs font-semibold text-slate-200">
+                        <span class="px-3 py-1.5 bg-slate-800/80 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-wifi text-emerald-400"></i> Wi-Fi 100 Mbps</span>
+                        <span class="px-3 py-1.5 bg-slate-800/80 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-video text-emerald-400"></i> CCTV 24/7</span>
+                        <span class="px-3 py-1.5 bg-slate-800/80 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-utensils text-emerald-400"></i> Dapur Bersama</span>
+                        <span class="px-3 py-1.5 bg-slate-800/80 rounded-xl border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-square-parking text-emerald-400"></i> Parkir Luas</span>
+                    </div>
+
+                    <!-- Call to Actions -->
+                    <div class="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                        <a href="#katalog-kamar" class="px-6 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-2xl shadow-xl shadow-brand-600/30 transition text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-bed"></i> Lihat Kamar Tersedia
+                        </a>
+                        <button onclick="contactOwnerWA()" class="px-6 py-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold rounded-2xl transition text-sm flex items-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-emerald-400 text-lg"></i> Tanya Pemilik via WA
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hero Image Card -->
+                <div class="lg:col-span-5">
+                    <div class="relative rounded-3xl overflow-hidden border-4 border-slate-800 shadow-2xl aspect-[4/3]">
+                        <img id="hero-kost-img" src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=900&q=80" alt="Bangunan Kost" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-md p-3.5 rounded-2xl border border-white/40 flex items-center justify-between text-slate-800 text-xs">
+                            <div>
+                                <span class="font-extrabold block text-sm">Status Kamar Real-Time</span>
+                                <span class="text-slate-500" id="hero-room-summary-text">Cek ketersediaan kamar di bawah</span>
+                            </div>
+                            <span class="w-3 h-3 bg-emerald-500 rounded-full animate-ping"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Property Features & Info -->
+        <section class="py-12 bg-white border-b border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-4">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-xl flex-shrink-0">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">Lokasi Strategis</h4>
+                            <p id="info-kost-address" class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                Jl. Afandi No. 12, Gejayan, Sleman, Yogyakarta (Dekat UNY & UGM)
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-4">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-xl flex-shrink-0">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">Keamanan & Kebersihan</h4>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                Akses gerbang 24 jam dengan CCTV, kebersihan koridor & area bersama dibersihkan rutin.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-4">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-xl flex-shrink-0">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">Harga Transparan</h4>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                Sudah termasuk listrik dasar & Wi-Fi. Bayar sewa mudah via Transfer Bank / QRIS Pemilik.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROOM CATALOG & AVAILABILITY GRID -->
+        <section id="katalog-kamar" class="py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-200/60 mb-2">
+                        <i class="fa-solid fa-door-open"></i> Katalog Kamar Spesifik
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Pilih Kamar Anda</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">Status ketersediaan terupdate otomatis langsung dari pemilik kost.</p>
+                </div>
+
+                <!-- Filter Status Kamar -->
+                <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar">
+                    <button onclick="filterGuestRooms('semua')" id="filter-btn-semua" class="guest-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-900 text-white shadow">
+                        Semua Kamar
+                    </button>
+                    <button onclick="filterGuestRooms('Tersedia')" id="filter-btn-Tersedia" class="guest-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-white text-slate-700 border border-slate-200 hover:bg-slate-50">
+                        🟢 Tersedia Saja
+                    </button>
+                    <button onclick="filterGuestRooms('Terisi')" id="filter-btn-Terisi" class="guest-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-white text-slate-700 border border-slate-200 hover:bg-slate-50">
+                        🔴 Terisi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grid Container -->
+            <div id="guest-rooms-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamic Content via JS -->
+            </div>
+        </section>
+
+        <!-- ATURAN KOST -->
+        <section class="py-12 bg-slate-100 border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h4 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-list text-brand-600"></i> Aturan & Tata Tertib Kost
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700" id="guest-rules-list">
+                    <!-- JS Populated -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <!-- ================================================================================= -->
+    <!-- MODE 2: OWNER / ADMIN DASHBOARD VIEW -->
+    <!-- ================================================================================= -->
+    <main id="admin-view" class="hidden flex-grow bg-slate-100 pb-16">
+        <!-- Sub Header Admin -->
+        <div class="bg-slate-900 text-white py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-brand-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-lock text-emerald-400"></i> Dashboard Pemilik Kost (Terkunci)
+                    </span>
+                    <h2 class="text-2xl font-extrabold" id="admin-kost-title">Griya Asri Executive Residence</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Kelola nomor kamar, ubah ketersediaan, catat penghuni & cek tagihan jatuh tempo.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="openAddRoomModal()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> Tambah Kamar Baru
+                    </button>
+                    <button onclick="openSettingsModal()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition border border-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-gear"></i> Pengaturan Kost
+                    </button>
+                    <button onclick="logoutAdmin()" class="px-3.5 py-2.5 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded-xl text-xs font-bold transition border border-rose-500/30 flex items-center gap-1.5" title="Kunci Dashboard">
+                        <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4">
+            <!-- 4 STATS CARDS -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider">Total Kamar</span>
+                        <div class="w-8 h-8 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-door-closed"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-extrabold text-slate-900" id="stat-total-rooms">0</div>
+                    <span class="text-[11px] text-slate-400">Total kamar terdaftar</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider">Kamar Terisi</span>
+                        <div class="w-8 h-8 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-extrabold text-slate-900" id="stat-occupied-rooms">0</div>
+                    <span class="text-[11px] text-emerald-600 font-semibold" id="stat-occupancy-rate">0% Tingkat Hunian</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider">Kamar Kosong</span>
+                        <div class="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-extrabold text-slate-900" id="stat-available-rooms">0</div>
+                    <span class="text-[11px] text-slate-400">Siap disewakan</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider">Est. Pendapatan</span>
+                        <div class="w-8 h-8 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-brand-700" id="stat-est-revenue">Rp 0</div>
+                    <span class="text-[11px] text-slate-400">Potensi / bulan</span>
+                </div>
+            </div>
+
+            <!-- ADMIN NAVIGATION TABS -->
+            <div class="flex items-center gap-2 border-b border-slate-200 mb-6 overflow-x-auto hide-scrollbar">
+                <button onclick="switchAdminTab('rooms')" id="admin-tab-rooms" class="admin-tab-btn px-4 py-3 font-bold text-xs sm:text-sm border-b-2 border-brand-600 text-brand-700 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-table-cells"></i> Kelola Status Kamar
+                </button>
+                <button onclick="switchAdminTab('tenants')" id="admin-tab-tenants" class="admin-tab-btn px-4 py-3 font-bold text-xs sm:text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-users text-slate-400"></i> Penghuni & Tagihan
+                </button>
+                <button onclick="switchAdminTab('bookings')" id="admin-tab-bookings" class="admin-tab-btn px-4 py-3 font-bold text-xs sm:text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-inbox text-slate-400"></i> Log Direct Booking <span id="admin-booking-badge" class="bg-rose-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">0</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: KELOLA KAMAR -->
+            <div id="admin-tab-rooms-content" class="space-y-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2 text-slate-600">
+                        <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                        <span>Klik tombol status pada setiap kamar untuk mengubah ketersediaan secara <b>Instant Real-Time</b>.</span>
+                    </div>
+                </div>
+
+                <div id="admin-rooms-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- JS Populated -->
+                </div>
+            </div>
+
+            <!-- TAB 2: PENGHUNI & TAGIHAN -->
+            <div id="admin-tab-tenants-content" class="hidden bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+                <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base">Daftar Penghuni Aktif & Tagihan</h3>
+                        <p class="text-xs text-slate-500">Kirim pengingat sewa WhatsApp langsung ke nomor penghuni.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 font-bold text-slate-600 uppercase tracking-wider">
+                                <th class="p-4">Kamar</th>
+                                <th class="p-4">Nama Penghuni</th>
+                                <th class="p-4">No. WhatsApp</th>
+                                <th class="p-4">Tgl Masuk</th>
+                                <th class="p-4">Status Tagihan</th>
+                                <th class="p-4 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-tenants-tbody" class="divide-y divide-slate-100 text-slate-700">
+                            <!-- JS Populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: LOG DIRECT BOOKING -->
+            <div id="admin-tab-bookings-content" class="hidden space-y-4">
+                <div id="admin-bookings-list" class="space-y-3">
+                    <!-- JS Populated -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 py-8 text-xs border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-white font-bold text-sm">
+                <i class="fa-solid fa-building-user text-emerald-500"></i> <span id="footer-kost-name">Griya Asri Executive</span>
+            </div>
+            <p>&copy; 2026 Direct Booking & Property Management System. Powered by LocalStorage.</p>
+        </div>
+    </footer>
+
+
+    <!-- ================================================================================= -->
+    <!-- MODALS SECTION -->
+    <!-- ================================================================================= -->
+
+    <!-- MODAL PIN KEAMANAN PEMILIK (BARU) -->
+    <div id="pin-modal" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-md overflow-y-auto flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden relative my-8 border border-slate-100">
+            <div class="bg-slate-900 p-6 text-white text-center relative">
+                <button onclick="closeModal('pin-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="w-14 h-14 bg-brand-500/20 text-brand-400 border border-brand-500/40 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h3 class="text-lg font-extrabold">Akses Panel Pemilik</h3>
+                <p class="text-xs text-slate-400 mt-1">Masukkan Kode PIN Keamanan Anda</p>
+            </div>
+
+            <form onsubmit="verifyAdminPin(event)" class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1.5 text-center">Kode PIN Pemilik</label>
+                    <input type="password" id="input-admin-pin" required maxlength="10" placeholder="••••" class="w-full bg-slate-50 border border-slate-300 rounded-2xl p-3 text-center text-2xl font-bold tracking-widest text-slate-900 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
+                    <p class="text-[11px] text-slate-400 mt-2 text-center">
+                        <i class="fa-solid fa-circle-info text-brand-600"></i> PIN Default bawaan: <span class="font-bold text-slate-700">1234</span>
+                    </p>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-extrabold rounded-xl shadow-lg shadow-brand-600/30 text-sm transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-key"></i> Buka Panel Pemilik
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 1: DIRECT BOOKING (GUEST) -->
+    <div id="booking-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm overflow-y-auto flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden relative my-8">
+            <div class="bg-gradient-to-r from-brand-800 to-emerald-700 p-6 text-white relative">
+                <button onclick="closeModal('booking-modal')" class="absolute top-5 right-5 text-white/80 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <span class="px-2.5 py-1 bg-white/20 rounded-full text-[11px] font-bold">Direct Booking Pemilik</span>
+                <h3 class="text-xl font-extrabold mt-1">Formulir Pemesanan Kamar</h3>
+                <p id="modal-room-name-display" class="text-xs text-brand-100 mt-0.5">Kamar 101 - Deluxe AC</p>
+            </div>
+
+            <form onsubmit="submitGuestBooking(event)" class="p-6 space-y-4 text-xs">
+                <input type="hidden" id="form-room-id">
+
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Nama Lengkap Pemesan</label>
+                    <input type="text" id="form-guest-name" required placeholder="Contoh: Budi Santoso" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">No. WhatsApp (Aktif)</label>
+                        <input type="tel" id="form-guest-phone" required placeholder="08123456789" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-medium focus:ring-2 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Tanggal Rencana Masuk</label>
+                        <input type="date" id="form-guest-checkin" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-medium focus:ring-2 focus:ring-brand-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Durasi Sewa</label>
+                    <select id="form-guest-duration" onchange="recalculateBookingTotal()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-medium focus:ring-2 focus:ring-brand-500">
+                        <option value="1">1 Bulan</option>
+                        <option value="3">3 Bulan (Potongan Rp 50.000)</option>
+                        <option value="6">6 Bulan (Potongan Rp 150.000)</option>
+                        <option value="12">12 Bulan / 1 Tahun (Potongan 1/2 Bulan)</option>
+                    </select>
+                </div>
+
+                <!-- Price Breakdown Box -->
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+                    <div class="flex justify-between text-slate-600">
+                        <span>Sewa Kamar / Bulan:</span>
+                        <span id="booking-modal-monthly" class="font-bold text-slate-800">Rp 0</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Deposit Garansi (Pengembalian):</span>
+                        <span id="booking-modal-deposit" class="font-bold text-slate-800">Rp 100.000</span>
+                    </div>
+                    <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-sm">
+                        <span class="font-bold text-slate-900">Total Pertama Masuk:</span>
+                        <span id="booking-modal-grandtotal" class="font-extrabold text-brand-700 text-base">Rp 0</span>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-emerald-800 flex items-start gap-2">
+                    <i class="fa-brands fa-whatsapp text-xl text-emerald-600 mt-0.5"></i>
+                    <div>
+                        <span class="font-bold block">Penting:</span>
+                        <span>Setelah klik tombol di bawah, Anda akan langsung diarahkan ke WhatsApp Pemilik Kost untuk konfirmasi akhir.</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-600/30 text-sm transition flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> Kirim Booking via WhatsApp Pemilik
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL 2: EDIT / TAMBAH KAMAR (ADMIN) -->
+    <div id="room-edit-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm overflow-y-auto flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden relative my-8">
+            <div class="bg-slate-900 p-5 text-white flex items-center justify-between">
+                <h3 class="font-bold text-base" id="room-modal-title">Tambah Kamar Baru</h3>
+                <button onclick="closeModal('room-edit-modal')" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="saveRoomForm(event)" class="p-6 space-y-4 text-xs">
+                <input type="hidden" id="edit-room-id">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Nomor Kamar</label>
+                        <input type="text" id="edit-room-number" required placeholder="Misal: Kamar 105" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-medium">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Tipe Kamar</label>
+                        <input type="text" id="edit-room-type" required placeholder="Deluxe AC / Standard" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-medium">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Harga / Bulan (Rp)</label>
+                        <input type="number" id="edit-room-price" required placeholder="1500000" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-medium">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Status Ketersediaan</label>
+                        <select id="edit-room-status" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-medium">
+                            <option value="Tersedia">🟢 Tersedia</option>
+                            <option value="Terisi">🔴 Terisi</option>
+                            <option value="Perawatan">🟡 Perawatan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Fasilitas Kamar (Pisahkan koma)</label>
+                    <input type="text" id="edit-room-facilities" placeholder="AC, Wi-Fi, Kasur Springbed, Kamar Mandi Dalam" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-medium">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">URL Foto Kamar</label>
+                    <input type="url" id="edit-room-image" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-800 font-medium">
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow text-xs">
+                    Simpan Data Kamar
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MODAL 3: PENGATURAN KOST (ADMIN) -->
+    <div id="settings-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm overflow-y-auto flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden relative my-8">
+            <div class="bg-slate-900 p-5 text-white flex items-center justify-between">
+                <h3 class="font-bold text-base">Pengaturan Properti Kost</h3>
+                <button onclick="closeModal('settings-modal')" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="saveKostSettings(event)" class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Nama Properti Kost</label>
+                    <input type="text" id="set-kost-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Nomor WA Pemilik</label>
+                        <input type="tel" id="set-owner-phone" required placeholder="628123456789" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
+                        <span class="text-[10px] text-slate-400">Format awal 62...</span>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Kota Properti</label>
+                        <input type="text" id="set-kost-city" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">PIN Keamanan Panel Pemilik</label>
+                    <input type="text" id="set-admin-pin" required placeholder="1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-brand-700 tracking-wider">
+                    <span class="text-[10px] text-slate-400">PIN ini digunakan saat membuka Panel Pemilik.</span>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Alamat Lengkap Kost</label>
+                    <textarea id="set-kost-address" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Info Rekening Pembayaran Pemilik</label>
+                    <input type="text" id="set-bank-info" placeholder="BCA 1234567890 a.n. Pemilik Kost" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow text-xs">
+                    Simpan Pengaturan Kost
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ================================================================================= -->
+    <!-- JAVASCRIPT APP LOGIC -->
+    <!-- ================================================================================= -->
+    <script>
+        // DEFAULT INITIAL DATA FOR SINGLE KOST OWNER
+        const INITIAL_DATA = {
+            config: {
+                name: "Griya Asri Executive Kost",
+                city: "Sleman, Yogyakarta",
+                address: "Jl. Afandi No. 12, Gejayan, Depok, Sleman, DIY",
+                ownerPhone: "6281234567890",
+                bankInfo: "BCA 8901234567 a.n. Ibu Hartati (Pemilik)",
+                depositPrice: 100000,
+                adminPin: "1234",
+                description: "Kost hunian modern khusus mahasiswa & pekerja professional. Lingkungan asri, aman 24 jam dengan fasilitas private bathroom & Wi-Fi kencang.",
+                rules: [
+                    "Akses gerbang utama 24 jam (menggunakan kunci/RFID masing-masing)",
+                    "Dilarang membawa hewan peliharaan",
+                    "Jam bertamu hingga pukul 22:00 WIB di area ruang tamu bersama",
+                    "Menjaga kebersihan area umum & tidak merokok di dalam kamar ber-AC"
+                ]
+            },
+            rooms: [
+                {
+                    id: "rm-101",
+                    number: "Kamar 101",
+                    type: "Deluxe AC (Lantai 1)",
+                    price: 1850000,
+                    status: "Tersedia",
+                    facilities: ["AC 1 PK", "Wi-Fi 100Mbps", "Kamar Mandi Dalam", "Kasur Springbed 120x200", "Meja Belajar & Lemari"],
+                    image: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80",
+                    tenant: null
+                },
+                {
+                    id: "rm-102",
+                    number: "Kamar 102",
+                    type: "Deluxe AC (Lantai 1)",
+                    price: 1850000,
+                    status: "Terisi",
+                    facilities: ["AC 1 PK", "Wi-Fi 100Mbps", "Kamar Mandi Dalam", "Kasur Springbed", "Lemari 2 Pintu"],
+                    image: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80",
+                    tenant: {
+                        name: "Ahmad Rizky",
+                        phone: "6281987654321",
+                        checkinDate: "2026-01-10",
+                        dueDate: "2026-04-10",
+                        billingStatus: "Lunas"
+                    }
+                },
+                {
+                    id: "rm-103",
+                    number: "Kamar 103",
+                    type: "Standard Fan (Lantai 1)",
+                    price: 1300000,
+                    status: "Tersedia",
+                    facilities: ["Kipas Angin Dinding", "Wi-Fi 100Mbps", "Kamar Mandi Dalam", "Kasur Single", "Meja Belajar"],
+                    image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80",
+                    tenant: null
+                },
+                {
+                    id: "rm-201",
+                    number: "Kamar 201",
+                    type: "Executive Balcony (Lantai 2)",
+                    price: 2200000,
+                    status: "Terisi",
+                    facilities: ["AC", "Balkon Pribadi", "Smart TV", "Kamar Mandi Dalam", "Kulkas Mini"],
+                    image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80",
+                    tenant: {
+                        name: "Dian Sastro",
+                        phone: "6281333444555",
+                        checkinDate: "2025-11-01",
+                        dueDate: "2026-03-15",
+                        billingStatus: "Jatuh Tempo"
+                    }
+                },
+                {
+                    id: "rm-202",
+                    number: "Kamar 202",
+                    type: "Executive AC (Lantai 2)",
+                    price: 1950000,
+                    status: "Perawatan",
+                    facilities: ["AC", "Wi-Fi", "Kamar Mandi Dalam", "Water Heater", "Lemari Pakaian"],
+                    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80",
+                    tenant: null
+                },
+                {
+                    id: "rm-203",
+                    number: "Kamar 203",
+                    type: "Standard Fan (Lantai 2)",
+                    price: 1250000,
+                    status: "Tersedia",
+                    facilities: ["Kipas Angin", "Wi-Fi", "Kasur Single", "Kamar Mandi Luar Bersih"],
+                    image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80",
+                    tenant: null
+                }
+            ],
+            bookings: [
+                {
+                    id: "BK-9912",
+                    roomNumber: "Kamar 101",
+                    guestName: "Reza Rahadian",
+                    guestPhone: "6285711223344",
+                    checkin: "2026-04-01",
+                    duration: 3,
+                    grandTotal: 5600000,
+                    createdAt: "2026-03-01",
+                    status: "Pending WA Pemilik"
+                }
+            ]
+        };
+
+        // APPLICATION STATE Persistence
+        let appState = JSON.parse(localStorage.getItem('kost_owner_app_data')) || INITIAL_DATA;
+        let isAdminAuthenticated = false;
+
+        function saveState() {
+            localStorage.setItem('kost_owner_app_data', JSON.stringify(appState));
+        }
+
+        // FORMATTER UTILS
+        function formatRp(num) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
+        }
+
+        // DOM INIT
+        window.addEventListener('DOMContentLoaded', () => {
+            // Migration check for PIN
+            if (!appState.config.adminPin) {
+                appState.config.adminPin = "1234";
+                saveState();
+            }
+            updateBrandingUI();
+            renderGuestRooms();
+            renderGuestRules();
+            renderAdminDashboard();
+        });
+
+        function updateBrandingUI() {
+            const cfg = appState.config;
+            document.getElementById('nav-kost-name').textContent = cfg.name;
+            document.getElementById('nav-kost-city').textContent = cfg.city;
+            document.getElementById('hero-kost-name-display').textContent = cfg.name;
+            document.getElementById('hero-kost-desc').textContent = cfg.description;
+            document.getElementById('info-kost-address').textContent = cfg.address;
+            document.getElementById('admin-kost-title').textContent = cfg.name;
+            document.getElementById('footer-kost-name').textContent = cfg.name;
+        }
+
+        // MODE SWITCHER (GUEST vs ADMIN) WITH PIN PROTECTION
+        function switchMode(mode) {
+            const guestView = document.getElementById('guest-view');
+            const adminView = document.getElementById('admin-view');
+            const btnGuest = document.getElementById('btn-mode-guest');
+            const btnAdmin = document.getElementById('btn-mode-admin');
+
+            if (mode === 'guest') {
+                guestView.classList.remove('hidden');
+                adminView.classList.add('hidden');
+                btnGuest.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-white text-brand-700 shadow-sm";
+                btnAdmin.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 text-slate-600 hover:text-slate-900";
+                renderGuestRooms();
+            } else {
+                // Check Admin Authentication
+                if (!isAdminAuthenticated) {
+                    document.getElementById('input-admin-pin').value = '';
+                    document.getElementById('pin-modal').classList.remove('hidden');
+                    setTimeout(() => document.getElementById('input-admin-pin').focus(), 100);
+                    return;
+                }
+
+                guestView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                btnAdmin.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-slate-900 text-white shadow-sm";
+                btnGuest.className = "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 text-slate-600 hover:text-slate-900";
+                renderAdminDashboard();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function verifyAdminPin(e) {
+            e.preventDefault();
+            const inputPin = document.getElementById('input-admin-pin').value.trim();
+            const actualPin = appState.config.adminPin || "1234";
+
+            if (inputPin === actualPin) {
+                isAdminAuthenticated = true;
+                closeModal('pin-modal');
+                showToast('Verifikasi PIN Berhasil! Selamat datang.', 'success');
+                switchMode('admin');
+            } else {
+                showToast('PIN Salah! Silakan coba lagi.', 'error');
+                document.getElementById('input-admin-pin').value = '';
+                document.getElementById('input-admin-pin').focus();
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminAuthenticated = false;
+            switchMode('guest');
+            showToast('Panel Pemilik dikunci kembali.', 'info');
+        }
+
+        // ==========================================
+        // GUEST VIEW LOGIC
+        // ==========================================
+        let currentGuestFilter = 'semua';
+
+        function filterGuestRooms(status) {
+            currentGuestFilter = status;
+            document.querySelectorAll('.guest-filter-btn').forEach(btn => {
+                btn.className = "guest-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-white text-slate-700 border border-slate-200 hover:bg-slate-50";
+            });
+            document.getElementById(`filter-btn-${status}`).className = "guest-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-900 text-white shadow";
+            renderGuestRooms();
+        }
+
+        function renderGuestRooms() {
+            const container = document.getElementById('guest-rooms-grid');
+            let list = appState.rooms;
+
+            if (currentGuestFilter !== 'semua') {
+                list = list.filter(r => r.status === currentGuestFilter);
+            }
+
+            const availCount = appState.rooms.filter(r => r.status === 'Tersedia').length;
+            document.getElementById('hero-room-summary-text').textContent = `${availCount} dari ${appState.rooms.length} kamar siap disewa hari ini`;
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-slate-200 p-6">
+                        <i class="fa-solid fa-door-closed text-4xl text-slate-300 mb-2"></i>
+                        <h4 class="font-bold text-slate-800">Tidak ada kamar dengan status ini</h4>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = list.map(rm => {
+                let statusBadge = '';
+                if (rm.status === 'Tersedia') {
+                    statusBadge = `<span class="px-3 py-1 bg-emerald-500 text-white rounded-full text-[11px] font-extrabold shadow-sm"><i class="fa-solid fa-circle text-[8px] mr-1"></i> Tersedia</span>`;
+                } else if (rm.status === 'Terisi') {
+                    statusBadge = `<span class="px-3 py-1 bg-rose-500 text-white rounded-full text-[11px] font-extrabold shadow-sm"><i class="fa-solid fa-user text-[10px] mr-1"></i> Terisi</span>`;
+                } else {
+                    statusBadge = `<span class="px-3 py-1 bg-amber-500 text-white rounded-full text-[11px] font-extrabold shadow-sm"><i class="fa-solid fa-wrench text-[10px] mr-1"></i> Perawatan</span>`;
+                }
+
+                return `
+                <div class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-sm hover:shadow-xl transition flex flex-col justify-between group">
+                    <div>
+                        <!-- Photo & Status Badge -->
+                        <div class="relative aspect-[4/3] overflow-hidden bg-slate-100">
+                            <img src="${rm.image || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af'}" alt="${rm.number}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute top-3 left-3">${statusBadge}</div>
+                            <div class="absolute bottom-3 right-3 bg-slate-900/80 backdrop-blur-md text-white px-2.5 py-1 rounded-lg text-xs font-bold">
+                                ${rm.type}
+                            </div>
+                        </div>
+
+                        <div class="p-5">
+                            <h4 class="text-xl font-extrabold text-slate-900 mb-1">${rm.number}</h4>
+                            <div class="text-lg font-extrabold text-brand-700 mb-4">
+                                ${formatRp(rm.price)} <span class="text-xs font-normal text-slate-500">/ bulan</span>
+                            </div>
+
+                            <!-- Facilities -->
+                            <div class="space-y-1.5 mb-4">
+                                ${rm.facilities.map(f => `
+                                    <div class="flex items-center gap-2 text-xs text-slate-600 font-medium">
+                                        <i class="fa-solid fa-check text-brand-600 text-xs"></i> ${f}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Action -->
+                    <div class="p-5 pt-0">
+                        ${rm.status === 'Tersedia' ? `
+                            <button onclick="openBookingModal('${rm.id}')" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-2xl shadow-lg shadow-brand-600/30 text-xs transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-calendar-check"></i> Sewa Kamar Ini
+                            </button>
+                        ` : rm.status === 'Terisi' ? `
+                            <button onclick="notifyOwnerAvailable('${rm.number}')" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl text-xs transition flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> Tanyakan Kapan Kosong
+                            </button>
+                        ` : `
+                            <button disabled class="w-full py-3 bg-slate-100 text-slate-400 font-bold rounded-2xl text-xs cursor-not-allowed">
+                                Dalam Perawatan
+                            </button>
+                        `}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function renderGuestRules() {
+            const container = document.getElementById('guest-rules-list');
+            container.innerHTML = appState.config.rules.map(r => `
+                <div class="flex items-start gap-2.5 p-3 bg-white rounded-xl border border-slate-200">
+                    <i class="fa-solid fa-circle-info text-brand-600 mt-0.5"></i>
+                    <span>${r}</span>
+                </div>
+            `).join('');
+        }
+
+        function contactOwnerWA() {
+            const phone = appState.config.ownerPhone;
+            const text = encodeURIComponent(`Halo Pemilik ${appState.config.name}, saya ingin bertanya mengenai ketersediaan sewa kamar kost.`);
+            window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        }
+
+        function notifyOwnerAvailable(roomNum) {
+            const phone = appState.config.ownerPhone;
+            const text = encodeURIComponent(`Halo Pemilik ${appState.config.name}, saya tertarik dengan *${roomNum}*. Apakah ada perkiraan kapan kamar ini akan tersedia/kosong? Terima kasih.`);
+            window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+        }
+
+        // DIRECT BOOKING MODAL LOGIC
+        let activeRoomForBooking = null;
+
+        function openBookingModal(roomId) {
+            activeRoomForBooking = appState.rooms.find(r => r.id === roomId);
+            if (!activeRoomForBooking) return;
+
+            document.getElementById('form-room-id').value = activeRoomForBooking.id;
+            document.getElementById('modal-room-name-display').textContent = `${activeRoomForBooking.number} - ${activeRoomForBooking.type}`;
+            
+            // Set min checkin date today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('form-guest-checkin').min = today;
+            document.getElementById('form-guest-checkin').value = today;
+
+            recalculateBookingTotal();
+            document.getElementById('booking-modal').classList.remove('hidden');
+        }
+
+        function recalculateBookingTotal() {
+            if (!activeRoomForBooking) return;
+            const duration = parseInt(document.getElementById('form-guest-duration').value, 10);
+            const monthlyPrice = activeRoomForBooking.price;
+            
+            let subtotal = monthlyPrice * duration;
+            if (duration === 3) subtotal -= 50000;
+            if (duration === 6) subtotal -= 150000;
+            if (duration === 12) subtotal -= (monthlyPrice * 0.5);
+
+            const deposit = appState.config.depositPrice || 100000;
+            const grandTotal = subtotal + deposit;
+
+            document.getElementById('booking-modal-monthly').textContent = formatRp(monthlyPrice);
+            document.getElementById('booking-modal-deposit').textContent = formatRp(deposit);
+            document.getElementById('booking-modal-grandtotal').textContent = formatRp(grandTotal);
+        }
+
+        function submitGuestBooking(e) {
+            e.preventDefault();
+            if (!activeRoomForBooking) return;
+
+            const name = document.getElementById('form-guest-name').value.trim();
+            const phone = document.getElementById('form-guest-phone').value.trim();
+            const checkin = document.getElementById('form-guest-checkin').value;
+            const duration = parseInt(document.getElementById('form-guest-duration').value, 10);
+
+            let subtotal = activeRoomForBooking.price * duration;
+            if (duration === 3) subtotal -= 50000;
+            if (duration === 6) subtotal -= 150000;
+            if (duration === 12) subtotal -= (activeRoomForBooking.price * 0.5);
+            const grandTotal = subtotal + (appState.config.depositPrice || 100000);
+
+            const newBooking = {
+                id: 'BK-' + Math.floor(1000 + Math.random() * 9000),
+                roomNumber: activeRoomForBooking.number,
+                guestName: name,
+                guestPhone: phone,
+                checkin: checkin,
+                duration: duration,
+                grandTotal: grandTotal,
+                createdAt: new Date().toISOString().split('T')[0],
+                status: 'Pending WA Pemilik'
+            };
+
+            // Save to local storage
+            appState.bookings.unshift(newBooking);
+            saveState();
+
+            closeModal('booking-modal');
+            showToast('Pemesanan tersimpan! Membuka WhatsApp Pemilik...', 'success');
+
+            // Format WhatsApp Message
+            const ownerPhone = appState.config.ownerPhone;
+            const waText = encodeURIComponent(
+                `*HALO PEMILIK KOST ${appState.config.name.toUpperCase()}*\n` +
+                `Saya ingin mengajukan Direct Booking Kamar Kost:\n\n` +
+                `📌 *Detail Pemesanan:*\n` +
+                `• ID Booking: *${newBooking.id}*\n` +
+                `• Kamar: *${activeRoomForBooking.number}* (${activeRoomForBooking.type})\n` +
+                `• Nama Pemesan: *${name}*\n` +
+                `• No. WA: *${phone}*\n` +
+                `• Tgl Rencana Masuk: *${checkin}*\n` +
+                `• Durasi Sewa: *${duration} Bulan*\n` +
+                `• Total Tagihan Pertama: *${formatRp(grandTotal)}*\n\n` +
+                `Mohon info instruksi pembayaran & pengecekan syarat sewa. Terima kasih!`
+            );
+
+            setTimeout(() => {
+                window.open(`https://wa.me/${ownerPhone}?text=${waText}`, '_blank');
+            }, 500);
+        }
+
+
+        // ==========================================
+        // ADMIN DASHBOARD LOGIC
+        // ==========================================
+        function renderAdminDashboard() {
+            // Update Stats
+            const total = appState.rooms.length;
+            const occupied = appState.rooms.filter(r => r.status === 'Terisi').length;
+            const available = appState.rooms.filter(r => r.status === 'Tersedia').length;
+            const estRevenue = appState.rooms.reduce((acc, r) => acc + (r.status === 'Terisi' ? r.price : 0), 0);
+            const occRate = total > 0 ? Math.round((occupied / total) * 100) : 0;
+
+            document.getElementById('stat-total-rooms').textContent = total;
+            document.getElementById('stat-occupied-rooms').textContent = occupied;
+            document.getElementById('stat-occupancy-rate').textContent = `${occRate}% Tingkat Hunian`;
+            document.getElementById('stat-available-rooms').textContent = available;
+            document.getElementById('stat-est-revenue').textContent = formatRp(estRevenue);
+
+            document.getElementById('admin-booking-badge').textContent = appState.bookings.length;
+
+            renderAdminRooms();
+            renderAdminTenants();
+            renderAdminBookings();
+        }
+
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab-btn').forEach(b => {
+                b.className = "admin-tab-btn px-4 py-3 font-bold text-xs sm:text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-900 flex items-center gap-2 whitespace-nowrap";
+            });
+
+            document.getElementById('admin-tab-rooms-content').classList.add('hidden');
+            document.getElementById('admin-tab-tenants-content').classList.add('hidden');
+            document.getElementById('admin-tab-bookings-content').classList.add('hidden');
+
+            document.getElementById(`admin-tab-${tab}`).className = "admin-tab-btn px-4 py-3 font-bold text-xs sm:text-sm border-b-2 border-brand-600 text-brand-700 flex items-center gap-2 whitespace-nowrap";
+            document.getElementById(`admin-tab-${tab}-content`).classList.remove('hidden');
+        }
+
+        function renderAdminRooms() {
+            const container = document.getElementById('admin-rooms-list');
+            container.innerHTML = appState.rooms.map(rm => `
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">${rm.number}</h4>
+                            <span class="text-xs text-slate-500">${rm.type}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-extrabold text-brand-700 block">${formatRp(rm.price)}</span>
+                            <span class="text-[10px] text-slate-400">/ bulan</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Status Toggle -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Ubah Status Real-Time</label>
+                        <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl">
+                            <button onclick="updateRoomStatus('${rm.id}', 'Tersedia')" class="py-1.5 text-[11px] font-bold rounded-lg transition ${rm.status === 'Tersedia' ? 'bg-emerald-600 text-white shadow' : 'text-slate-600 hover:bg-slate-200'}">
+                                Tersedia
+                            </button>
+                            <button onclick="updateRoomStatus('${rm.id}', 'Terisi')" class="py-1.5 text-[11px] font-bold rounded-lg transition ${rm.status === 'Terisi' ? 'bg-rose-600 text-white shadow' : 'text-slate-600 hover:bg-slate-200'}">
+                                Terisi
+                            </button>
+                            <button onclick="updateRoomStatus('${rm.id}', 'Perawatan')" class="py-1.5 text-[11px] font-bold rounded-lg transition ${rm.status === 'Perawatan' ? 'bg-amber-500 text-white shadow' : 'text-slate-600 hover:bg-slate-200'}">
+                                Perawatan
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tenant Info if Occupied -->
+                    ${rm.tenant ? `
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                            <div class="flex justify-between font-bold text-slate-800">
+                                <span>Penghuni: ${rm.tenant.name}</span>
+                                <span class="text-[10px] ${rm.tenant.billingStatus === 'Lunas' ? 'text-emerald-600' : 'text-rose-600'}">${rm.tenant.billingStatus}</span>
+                            </div>
+                            <div class="text-[11px] text-slate-500">Jatuh Tempo: ${rm.tenant.dueDate}</div>
+                        </div>
+                    ` : ''}
+
+                    <!-- Actions -->
+                    <div class="flex items-center justify-between pt-2">
+                        <button onclick="openEditRoomModal('${rm.id}')" class="text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center gap-1">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Kamar
+                        </button>
+                        <button onclick="deleteRoom('${rm.id}')" class="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1">
+                            <i class="fa-solid fa-trash"></i> Hapus
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateRoomStatus(roomId, newStatus) {
+            const room = appState.rooms.find(r => r.id === roomId);
+            if (room) {
+                room.status = newStatus;
+                if (newStatus === 'Tersedia') room.tenant = null;
+                saveState();
+                renderAdminDashboard();
+                showToast(`Status ${room.number} diubah menjadi ${newStatus}`, 'info');
+            }
+        }
+
+        function deleteRoom(roomId) {
+            appState.rooms = appState.rooms.filter(r => r.id !== roomId);
+            saveState();
+            renderAdminDashboard();
+            showToast('Kamar berhasil dihapus', 'info');
+        }
+
+        function renderAdminTenants() {
+            const tbody = document.getElementById('admin-tenants-tbody');
+            const occupiedRooms = appState.rooms.filter(r => r.status === 'Terisi' && r.tenant);
+
+            if (occupiedRooms.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">Belum ada kamar yang berstatus terisi.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = occupiedRooms.map(r => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-4 font-bold text-slate-900">${r.number}</td>
+                    <td class="p-4 font-semibold">${r.tenant.name}</td>
+                    <td class="p-4">${r.tenant.phone}</td>
+                    <td class="p-4">${r.tenant.checkinDate}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${r.tenant.billingStatus === 'Lunas' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                            ${r.tenant.billingStatus}
+                        </span>
+                    </td>
+                    <td class="p-4 text-right space-x-1">
+                        <button onclick="toggleBillingStatus('${r.id}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-bold text-[11px]">
+                            Ubah Tagihan
+                        </button>
+                        <button onclick="sendWAReminder('${r.id}')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-[11px] inline-flex items-center gap-1">
+                            <i class="fa-brands fa-whatsapp"></i> Ingatkan WA
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleBillingStatus(roomId) {
+            const room = appState.rooms.find(r => r.id === roomId);
+            if (room && room.tenant) {
+                room.tenant.billingStatus = room.tenant.billingStatus === 'Lunas' ? 'Jatuh Tempo' : 'Lunas';
+                saveState();
+                renderAdminDashboard();
+                showToast(`Status tagihan ${room.tenant.name} diperbarui!`, 'success');
+            }
+        }
+
+        function sendWAReminder(roomId) {
+            const room = appState.rooms.find(r => r.id === roomId);
+            if (!room || !room.tenant) return;
+
+            const text = encodeURIComponent(
+                `Halo Kak *${room.tenant.name}* (Penghuni ${room.number} ${appState.config.name}),\n\n` +
+                `Sekadar mengingatkan untuk pembayaran sewa bulan ini:\n` +
+                `• Nomor Kamar: *${room.number}*\n` +
+                `• Nominal Sewa: *${formatRp(room.price)}*\n` +
+                `• Pembayaran Via: *${appState.config.bankInfo}*\n\n` +
+                `Mohon konfirmasi jika sudah melakukan transfer ya Kak. Terima kasih!`
+            );
+
+            window.open(`https://wa.me/${room.tenant.phone}?text=${text}`, '_blank');
+        }
+
+        function renderAdminBookings() {
+            const container = document.getElementById('admin-bookings-list');
+            if (appState.bookings.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center bg-white rounded-2xl text-slate-400">Belum ada riwayat direct booking masuk.</div>`;
+                return;
+            }
+
+            container.innerHTML = appState.bookings.map(b => `
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-mono font-bold text-brand-700">${b.id}</span>
+                            <span class="text-slate-400">• ${b.createdAt}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm">${b.guestName} (${b.guestPhone})</h4>
+                        <p class="text-slate-500 mt-0.5">Memesan <span class="font-bold text-slate-800">${b.roomNumber}</span> untuk tanggal ${b.checkin} (${b.duration} Bulan)</p>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <span class="font-extrabold text-slate-900 text-sm">${formatRp(b.grandTotal)}</span>
+                        <button onclick="acceptBookingToTenant('${b.id}')" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow">
+                            Terima & Masukkan Penghuni
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function acceptBookingToTenant(bookingId) {
+            const booking = appState.bookings.find(b => b.id === bookingId);
+            if (!booking) return;
+
+            // Find matching room
+            const room = appState.rooms.find(r => r.number === booking.roomNumber);
+            if (room) {
+                room.status = 'Terisi';
+                room.tenant = {
+                    name: booking.guestName,
+                    phone: booking.guestPhone,
+                    checkinDate: booking.checkin,
+                    dueDate: booking.checkin,
+                    billingStatus: 'Lunas'
+                };
+            }
+
+            appState.bookings = appState.bookings.filter(b => b.id !== bookingId);
+            saveState();
+            renderAdminDashboard();
+            showToast(`Pemesanan ${booking.guestName} diterima & kamar diubah ke Terisi!`, 'success');
+        }
+
+        // EDIT & ADD ROOM MODAL
+        function openAddRoomModal() {
+            document.getElementById('room-modal-title').textContent = "Tambah Kamar Baru";
+            document.getElementById('edit-room-id').value = "";
+            document.getElementById('edit-room-number').value = "";
+            document.getElementById('edit-room-type').value = "";
+            document.getElementById('edit-room-price').value = "";
+            document.getElementById('edit-room-facilities').value = "";
+            document.getElementById('edit-room-image').value = "";
+            document.getElementById('room-edit-modal').classList.remove('hidden');
+        }
+
+        function openEditRoomModal(roomId) {
+            const room = appState.rooms.find(r => r.id === roomId);
+            if (!room) return;
+
+            document.getElementById('room-modal-title').textContent = "Edit Kamar";
+            document.getElementById('edit-room-id').value = room.id;
+            document.getElementById('edit-room-number').value = room.number;
+            document.getElementById('edit-room-type').value = room.type;
+            document.getElementById('edit-room-price').value = room.price;
+            document.getElementById('edit-room-status').value = room.status;
+            document.getElementById('edit-room-facilities').value = room.facilities.join(', ');
+            document.getElementById('edit-room-image').value = room.image;
+            document.getElementById('room-edit-modal').classList.remove('hidden');
+        }
+
+        function saveRoomForm(e) {
+            e.preventDefault();
+            const roomId = document.getElementById('edit-room-id').value;
+            const number = document.getElementById('edit-room-number').value.trim();
+            const type = document.getElementById('edit-room-type').value.trim();
+            const price = parseInt(document.getElementById('edit-room-price').value, 10);
+            const status = document.getElementById('edit-room-status').value;
+            const facilities = document.getElementById('edit-room-facilities').value.split(',').map(f => f.trim()).filter(Boolean);
+            const image = document.getElementById('edit-room-image').value.trim();
+
+            if (roomId) {
+                // Update
+                const room = appState.rooms.find(r => r.id === roomId);
+                if (room) {
+                    room.number = number;
+                    room.type = type;
+                    room.price = price;
+                    room.status = status;
+                    room.facilities = facilities;
+                    if (image) room.image = image;
+                }
+            } else {
+                // Create
+                const newRoom = {
+                    id: 'rm-' + Date.now(),
+                    number,
+                    type,
+                    price,
+                    status,
+                    facilities: facilities.length ? facilities : ["AC", "Wi-Fi", "Kamar Mandi Dalam"],
+                    image: image || "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af",
+                    tenant: null
+                };
+                appState.rooms.push(newRoom);
+            }
+
+            saveState();
+            closeModal('room-edit-modal');
+            renderAdminDashboard();
+            showToast('Data kamar berhasil disimpan!', 'success');
+        }
+
+        // KOST SETTINGS MODAL
+        function openSettingsModal() {
+            document.getElementById('set-kost-name').value = appState.config.name;
+            document.getElementById('set-owner-phone').value = appState.config.ownerPhone;
+            document.getElementById('set-kost-city').value = appState.config.city;
+            document.getElementById('set-kost-address').value = appState.config.address;
+            document.getElementById('set-bank-info').value = appState.config.bankInfo;
+            document.getElementById('set-admin-pin').value = appState.config.adminPin || "1234";
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function saveKostSettings(e) {
+            e.preventDefault();
+            appState.config.name = document.getElementById('set-kost-name').value.trim();
+            appState.config.ownerPhone = document.getElementById('set-owner-phone').value.trim();
+            appState.config.city = document.getElementById('set-kost-city').value.trim();
+            appState.config.address = document.getElementById('set-kost-address').value.trim();
+            appState.config.bankInfo = document.getElementById('set-bank-info').value.trim();
+            appState.config.adminPin = document.getElementById('set-admin-pin').value.trim();
+
+            saveState();
+            updateBrandingUI();
+            closeModal('settings-modal');
+            showToast('Pengaturan & PIN kost berhasil diperbarui!', 'success');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let bg = 'bg-slate-900';
+            if (type === 'success') bg = 'bg-emerald-600';
+            if (type === 'error') bg = 'bg-rose-600';
+
+            toast.className = `${bg} text-white px-4 py-3 rounded-xl shadow-xl text-xs font-semibold flex items-center gap-2 animate-in slide-in-from-top duration-300`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${msg}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
