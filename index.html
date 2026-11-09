@@ -103,7 +103,7 @@
                         <i class="fa-solid fa-circle-check text-brand-400"></i> Terverifikasi Langsung Pemilik • Tanpa Biaya Perantara
                     </div>
                     <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-                        Sewa Kamar Nyaman di <br class="hidden sm:inline">
+                        <span id="hero-title-prefix">Sewa Kamar Nyaman di</span> <br class="hidden sm:inline">
                         <span id="hero-kost-name-display" class="bg-gradient-to-r from-emerald-300 to-brand-400 bg-clip-text text-transparent">Griya Asri Executive</span>
                     </h2>
                     <p id="hero-kost-desc" class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
@@ -155,8 +155,8 @@
                             <i class="fa-solid fa-location-dot"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-slate-900 text-sm">Lokasi Strategis</h4>
-                            <p id="info-kost-address" class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            <h4 id="info-location-title" class="font-bold text-slate-900 text-sm">Lokasi Strategis</h4>
+                            <p id="info-location-desc" class="text-xs text-slate-600 mt-1 leading-relaxed">
                                 Jl. Afandi No. 12, Gejayan, Sleman, Yogyakarta (Dekat UNY & UGM)
                             </p>
                         </div>
@@ -167,8 +167,8 @@
                             <i class="fa-solid fa-shield-halved"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-slate-900 text-sm">Keamanan & Kebersihan</h4>
-                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            <h4 id="info-security-title" class="font-bold text-slate-900 text-sm">Keamanan & Kebersihan</h4>
+                            <p id="info-security-desc" class="text-xs text-slate-600 mt-1 leading-relaxed">
                                 Akses gerbang 24 jam dengan CCTV, kebersihan koridor & area bersama dibersihkan rutin.
                             </p>
                         </div>
@@ -179,8 +179,8 @@
                             <i class="fa-solid fa-hand-holding-dollar"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-slate-900 text-sm">Harga Transparan</h4>
-                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            <h4 id="info-price-title" class="font-bold text-slate-900 text-sm">Harga Transparan</h4>
+                            <p id="info-price-desc" class="text-xs text-slate-600 mt-1 leading-relaxed">
                                 Sudah termasuk listrik dasar & Wi-Fi. Bayar sewa mudah via Transfer Bank / QRIS Pemilik.
                             </p>
                         </div>
@@ -251,6 +251,9 @@
                 <div class="flex items-center gap-2">
                     <button onclick="openAddRoomModal()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5">
                         <i class="fa-solid fa-plus"></i> Tambah Kamar Baru
+                    </button>
+                    <button onclick="openChangePinModal()" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-amber-200 rounded-xl text-xs font-bold transition border border-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-key"></i> Ganti PIN
                     </button>
                     <button onclick="openSettingsModal()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition border border-slate-700 flex items-center gap-1.5">
                         <i class="fa-solid fa-gear"></i> Pengaturan Kost
@@ -389,31 +392,64 @@
     <!-- MODALS SECTION -->
     <!-- ================================================================================= -->
 
-    <!-- MODAL PIN KEAMANAN PEMILIK (BARU) -->
+    <!-- MODAL PIN KEAMANAN PEMILIK -->
     <div id="pin-modal" class="fixed inset-0 z-50 hidden bg-slate-900/80 backdrop-blur-md overflow-y-auto flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden relative my-8 border border-slate-100">
-            <div class="bg-slate-900 p-6 text-white text-center relative">
-                <button onclick="closeModal('pin-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="w-14 h-14 bg-brand-500/20 text-brand-400 border border-brand-500/40 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
-                    <i class="fa-solid fa-user-shield"></i>
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden relative my-8">
+            <div class="bg-slate-900 p-6 text-white text-center">
+                <div class="w-14 h-14 bg-brand-500/20 text-brand-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 border border-brand-500/30">
+                    <i class="fa-solid fa-lock"></i>
                 </div>
-                <h3 class="text-lg font-extrabold">Akses Panel Pemilik</h3>
-                <p class="text-xs text-slate-400 mt-1">Masukkan Kode PIN Keamanan Anda</p>
+                <h3 class="font-extrabold text-lg">Keamanan Panel Pemilik</h3>
+                <p class="text-xs text-slate-400 mt-1">Masukkan PIN untuk mengakses Panel Pemilik Kost</p>
             </div>
 
             <form onsubmit="verifyAdminPin(event)" class="p-6 space-y-4 text-xs">
                 <div>
-                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1.5 text-center">Kode PIN Pemilik</label>
-                    <input type="password" id="input-admin-pin" required maxlength="10" placeholder="••••" class="w-full bg-slate-50 border border-slate-300 rounded-2xl p-3 text-center text-2xl font-bold tracking-widest text-slate-900 focus:ring-2 focus:ring-brand-500 focus:bg-white transition">
-                    <p class="text-[11px] text-slate-400 mt-2 text-center">
-                        <i class="fa-solid fa-circle-info text-brand-600"></i> PIN Default bawaan: <span class="font-bold text-slate-700">1234</span>
-                    </p>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">PIN Keamanan</label>
+                    <input type="password" id="input-admin-pin" required placeholder="Masukkan PIN (Bawaan: 1234)" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 font-bold text-center text-lg tracking-widest focus:ring-2 focus:ring-brand-500">
+                    <span class="text-[10px] text-slate-400 mt-1 block text-center">PIN default awal: <b>1234</b></span>
                 </div>
 
-                <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-extrabold rounded-xl shadow-lg shadow-brand-600/30 text-sm transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-key"></i> Buka Panel Pemilik
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('pin-modal')" class="w-1/3 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition">
+                        Batal
+                    </button>
+                    <button type="submit" class="w-2/3 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-unlock"></i> Masuk Panel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL GANTI PIN PEMILIK -->
+    <div id="change-pin-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm overflow-y-auto flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden relative my-8">
+            <div class="bg-slate-900 p-5 text-white flex items-center justify-between">
+                <h3 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-key text-amber-400"></i> Ubah PIN Pemilik</h3>
+                <button onclick="closeModal('change-pin-modal')" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="submitChangePin(event)" class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">PIN Saat Ini (Lama)</label>
+                    <input type="password" id="pin-old" required placeholder="Masukkan PIN lama" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">PIN Baru</label>
+                    <input type="password" id="pin-new" required placeholder="Minimal 4 karakter/angka" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Konfirmasi PIN Baru</label>
+                    <input type="password" id="pin-confirm" required placeholder="Ketik ulang PIN baru" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 font-medium focus:ring-2 focus:ring-brand-500">
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 text-xs transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan PIN Baru
                 </button>
             </form>
         </div>
@@ -551,50 +587,129 @@
 
     <!-- MODAL 3: PENGATURAN KOST (ADMIN) -->
     <div id="settings-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm overflow-y-auto flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden relative my-8">
+        <div class="bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden relative my-8">
             <div class="bg-slate-900 p-5 text-white flex items-center justify-between">
-                <h3 class="font-bold text-base">Pengaturan Properti Kost</h3>
+                <h3 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-sliders text-emerald-400"></i> Pengaturan & Edit Tampilan Web</h3>
                 <button onclick="closeModal('settings-modal')" class="text-slate-400 hover:text-white text-lg">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
+            <!-- Sub Navigation Tabs inside Modal -->
+            <div class="bg-slate-100 px-6 py-2 border-b border-slate-200 flex items-center gap-2 overflow-x-auto hide-scrollbar">
+                <button type="button" onclick="switchSettingSubTab('general')" id="set-tab-general-btn" class="setting-subtab-btn px-3 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white shadow-sm">
+                    1. Kontak & Rekening
+                </button>
+                <button type="button" onclick="switchSettingSubTab('tampilan')" id="set-tab-tampilan-btn" class="setting-subtab-btn px-3 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900">
+                    2. Edit Hero & Kartu Info
+                </button>
+                <button type="button" onclick="switchSettingSubTab('rules')" id="set-tab-rules-btn" class="setting-subtab-btn px-3 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900">
+                    3. Edit Aturan Kost
+                </button>
+            </div>
+
             <form onsubmit="saveKostSettings(event)" class="p-6 space-y-4 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Nama Properti Kost</label>
-                    <input type="text" id="set-kost-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
+                <!-- SUBTAB 1: GENERAL -->
+                <div id="set-tab-general" class="space-y-4">
                     <div>
-                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Nomor WA Pemilik</label>
-                        <input type="tel" id="set-owner-phone" required placeholder="628123456789" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
-                        <span class="text-[10px] text-slate-400">Format awal 62...</span>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Nama Properti Kost</label>
+                        <input type="text" id="set-kost-name" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
                     </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Nomor WA Pemilik</label>
+                            <input type="tel" id="set-owner-phone" required placeholder="628123456789" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
+                            <span class="text-[10px] text-slate-400">Format awal 62...</span>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Kota Properti</label>
+                            <input type="text" id="set-kost-city" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
+                        </div>
+                    </div>
+
                     <div>
-                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Kota Properti</label>
-                        <input type="text" id="set-kost-city" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">PIN Keamanan Panel Pemilik</label>
+                        <input type="text" id="set-admin-pin" required placeholder="1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-brand-700 tracking-wider">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Alamat Lengkap Kost</label>
+                        <textarea id="set-kost-address" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Info Rekening Pembayaran Pemilik</label>
+                        <input type="text" id="set-bank-info" placeholder="BCA 1234567890 a.n. Pemilik Kost" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
                     </div>
                 </div>
 
-                <div>
-                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">PIN Keamanan Panel Pemilik</label>
-                    <input type="text" id="set-admin-pin" required placeholder="1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-brand-700 tracking-wider">
-                    <span class="text-[10px] text-slate-400">PIN ini digunakan saat membuka Panel Pemilik.</span>
+                <!-- SUBTAB 2: EDIT TAMPILAN HERO & INFO CARDS -->
+                <div id="set-tab-tampilan" class="hidden space-y-4">
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Awalan Judul Banner Hero</label>
+                        <input type="text" id="set-hero-title-prefix" placeholder="Sewa Kamar Nyaman di" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Deskripsi Singkat Banner Hero</label>
+                        <textarea id="set-kost-desc" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">URL Foto Sampul Header Hero</label>
+                        <input type="url" id="set-hero-image" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200 space-y-3">
+                        <span class="font-extrabold text-slate-800 block text-xs">Kartu Informasi Unggulan:</span>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase">Kartu 1 (Judul)</label>
+                                <input type="text" id="set-info-loc-title" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase">Kartu 1 (Keterangan)</label>
+                                <input type="text" id="set-info-loc-desc" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-xs">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase">Kartu 2 (Judul)</label>
+                                <input type="text" id="set-info-sec-title" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase">Kartu 2 (Keterangan)</label>
+                                <input type="text" id="set-info-sec-desc" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-xs">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase">Kartu 3 (Judul)</label>
+                                <input type="text" id="set-info-prc-title" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase">Kartu 3 (Keterangan)</label>
+                                <input type="text" id="set-info-prc-desc" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-medium text-xs">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Alamat Lengkap Kost</label>
-                    <textarea id="set-kost-address" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium"></textarea>
+                <!-- SUBTAB 3: EDIT ATURAN KOST -->
+                <div id="set-tab-rules" class="hidden space-y-4">
+                    <div>
+                        <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Daftar Aturan Kost</label>
+                        <p class="text-[11px] text-slate-500 mb-2">Tuliskan setiap poin aturan pada baris baru (Satu baris = Satu poin aturan):</p>
+                        <textarea id="set-kost-rules" rows="6" placeholder="Akses gerbang 24 jam&#10;Dilarang membawa hewan peliharaan&#10;Jam bertamu s.d 22:00 WIB" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium leading-relaxed"></textarea>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block font-bold text-slate-700 uppercase tracking-wider mb-1">Info Rekening Pembayaran Pemilik</label>
-                    <input type="text" id="set-bank-info" placeholder="BCA 1234567890 a.n. Pemilik Kost" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-medium">
-                </div>
-
-                <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow text-xs">
-                    Simpan Pengaturan Kost
+                <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 text-xs transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Semua Perubahan Tampilan
                 </button>
             </form>
         </div>
@@ -727,11 +842,18 @@
 
         // DOM INIT
         window.addEventListener('DOMContentLoaded', () => {
-            // Migration check for PIN
-            if (!appState.config.adminPin) {
-                appState.config.adminPin = "1234";
-                saveState();
-            }
+            // Migration check for PIN & new Config Fields
+            if (!appState.config.adminPin) appState.config.adminPin = "1234";
+            if (!appState.config.heroTitlePrefix) appState.config.heroTitlePrefix = "Sewa Kamar Nyaman di";
+            if (!appState.config.heroImage) appState.config.heroImage = "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=900&q=80";
+            if (!appState.config.infoLocationTitle) appState.config.infoLocationTitle = "Lokasi Strategis";
+            if (!appState.config.infoLocationDesc) appState.config.infoLocationDesc = appState.config.address || "Jl. Afandi No. 12, Gejayan, Sleman, Yogyakarta";
+            if (!appState.config.infoSecurityTitle) appState.config.infoSecurityTitle = "Keamanan & Kebersihan";
+            if (!appState.config.infoSecurityDesc) appState.config.infoSecurityDesc = "Akses gerbang 24 jam dengan CCTV, kebersihan koridor & area bersama dibersihkan rutin.";
+            if (!appState.config.infoPriceTitle) appState.config.infoPriceTitle = "Harga Transparan";
+            if (!appState.config.infoPriceDesc) appState.config.infoPriceDesc = "Sudah termasuk listrik dasar & Wi-Fi. Bayar sewa mudah via Transfer Bank / QRIS Pemilik.";
+            saveState();
+
             updateBrandingUI();
             renderGuestRooms();
             renderGuestRules();
@@ -740,13 +862,31 @@
 
         function updateBrandingUI() {
             const cfg = appState.config;
-            document.getElementById('nav-kost-name').textContent = cfg.name;
-            document.getElementById('nav-kost-city').textContent = cfg.city;
-            document.getElementById('hero-kost-name-display').textContent = cfg.name;
-            document.getElementById('hero-kost-desc').textContent = cfg.description;
-            document.getElementById('info-kost-address').textContent = cfg.address;
-            document.getElementById('admin-kost-title').textContent = cfg.name;
-            document.getElementById('footer-kost-name').textContent = cfg.name;
+            const setTxt = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            };
+
+            setTxt('nav-kost-name', cfg.name);
+            setTxt('nav-kost-city', cfg.city);
+            setTxt('hero-title-prefix', cfg.heroTitlePrefix || "Sewa Kamar Nyaman di");
+            setTxt('hero-kost-name-display', cfg.name);
+            setTxt('hero-kost-desc', cfg.description);
+            
+            const heroImg = document.getElementById('hero-kost-img');
+            if (heroImg && cfg.heroImage) {
+                heroImg.src = cfg.heroImage;
+            }
+            
+            setTxt('info-location-title', cfg.infoLocationTitle || "Lokasi Strategis");
+            setTxt('info-location-desc', cfg.infoLocationDesc || cfg.address);
+            setTxt('info-security-title', cfg.infoSecurityTitle || "Keamanan & Kebersihan");
+            setTxt('info-security-desc', cfg.infoSecurityDesc || "Akses gerbang 24 jam dengan CCTV, kebersihan koridor & area bersama dibersihkan rutin.");
+            setTxt('info-price-title', cfg.infoPriceTitle || "Harga Transparan");
+            setTxt('info-price-desc', cfg.infoPriceDesc || "Sudah termasuk listrik dasar & Wi-Fi. Bayar sewa mudah via Transfer Bank / QRIS Pemilik.");
+
+            setTxt('admin-kost-title', cfg.name);
+            setTxt('footer-kost-name', cfg.name);
         }
 
         // MODE SWITCHER (GUEST vs ADMIN) WITH PIN PROTECTION
@@ -1261,7 +1401,7 @@
 
         function saveRoomForm(e) {
             e.preventDefault();
-            const roomId = document.getElementById('edit-room-id').value;
+            const id = document.getElementById('edit-room-id').value;
             const number = document.getElementById('edit-room-number').value.trim();
             const type = document.getElementById('edit-room-type').value.trim();
             const price = parseInt(document.getElementById('edit-room-price').value, 10);
@@ -1269,9 +1409,9 @@
             const facilities = document.getElementById('edit-room-facilities').value.split(',').map(f => f.trim()).filter(Boolean);
             const image = document.getElementById('edit-room-image').value.trim();
 
-            if (roomId) {
-                // Update
-                const room = appState.rooms.find(r => r.id === roomId);
+            if (id) {
+                // Edit kamar yang ada
+                const room = appState.rooms.find(r => r.id === id);
                 if (room) {
                     room.number = number;
                     room.type = type;
@@ -1281,54 +1421,132 @@
                     if (image) room.image = image;
                 }
             } else {
-                // Create
+                // Tambah kamar baru
                 const newRoom = {
                     id: 'rm-' + Date.now(),
-                    number,
-                    type,
-                    price,
-                    status,
-                    facilities: facilities.length ? facilities : ["AC", "Wi-Fi", "Kamar Mandi Dalam"],
-                    image: image || "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af",
+                    number: number,
+                    type: type,
+                    price: price,
+                    status: status,
+                    facilities: facilities,
+                    image: image || 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=800&q=80',
                     tenant: null
                 };
                 appState.rooms.push(newRoom);
             }
 
             saveState();
-            closeModal('room-edit-modal');
             renderAdminDashboard();
+            closeModal('room-edit-modal');
             showToast('Data kamar berhasil disimpan!', 'success');
         }
 
-        // KOST SETTINGS MODAL
+        // KOST SETTINGS MODAL & EDITOR
         function openSettingsModal() {
-            document.getElementById('set-kost-name').value = appState.config.name;
-            document.getElementById('set-owner-phone').value = appState.config.ownerPhone;
-            document.getElementById('set-kost-city').value = appState.config.city;
-            document.getElementById('set-kost-address').value = appState.config.address;
-            document.getElementById('set-bank-info').value = appState.config.bankInfo;
+            document.getElementById('set-kost-name').value = appState.config.name || '';
+            document.getElementById('set-hero-title-prefix').value = appState.config.heroTitlePrefix || 'Sewa Kamar Nyaman di';
+            document.getElementById('set-owner-phone').value = appState.config.ownerPhone || '';
+            document.getElementById('set-kost-city').value = appState.config.city || '';
+            document.getElementById('set-kost-address').value = appState.config.address || '';
+            document.getElementById('set-kost-desc').value = appState.config.description || '';
+            document.getElementById('set-hero-image').value = appState.config.heroImage || '';
+            document.getElementById('set-bank-info').value = appState.config.bankInfo || '';
             document.getElementById('set-admin-pin').value = appState.config.adminPin || "1234";
+
+            document.getElementById('set-info-loc-title').value = appState.config.infoLocationTitle || "Lokasi Strategis";
+            document.getElementById('set-info-loc-desc').value = appState.config.infoLocationDesc || appState.config.address;
+            document.getElementById('set-info-sec-title').value = appState.config.infoSecurityTitle || "Keamanan & Kebersihan";
+            document.getElementById('set-info-sec-desc').value = appState.config.infoSecurityDesc || "";
+            document.getElementById('set-info-prc-title').value = appState.config.infoPriceTitle || "Harga Transparan";
+            document.getElementById('set-info-prc-desc').value = appState.config.infoPriceDesc || "";
+
+            document.getElementById('set-kost-rules').value = (appState.config.rules || []).join('\n');
+            
+            switchSettingSubTab('general');
             document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function switchSettingSubTab(subtab) {
+            document.querySelectorAll('.setting-subtab-btn').forEach(b => {
+                b.className = "setting-subtab-btn px-3 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900";
+            });
+            document.getElementById(`set-tab-${subtab}-btn`).className = "setting-subtab-btn px-3 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white shadow-sm";
+
+            document.getElementById('set-tab-general').classList.add('hidden');
+            document.getElementById('set-tab-tampilan').classList.add('hidden');
+            document.getElementById('set-tab-rules').classList.add('hidden');
+
+            document.getElementById(`set-tab-${subtab}`).classList.remove('hidden');
         }
 
         function saveKostSettings(e) {
             e.preventDefault();
             appState.config.name = document.getElementById('set-kost-name').value.trim();
+            appState.config.heroTitlePrefix = document.getElementById('set-hero-title-prefix').value.trim();
             appState.config.ownerPhone = document.getElementById('set-owner-phone').value.trim();
             appState.config.city = document.getElementById('set-kost-city').value.trim();
             appState.config.address = document.getElementById('set-kost-address').value.trim();
+            appState.config.description = document.getElementById('set-kost-desc').value.trim();
+            appState.config.heroImage = document.getElementById('set-hero-image').value.trim();
             appState.config.bankInfo = document.getElementById('set-bank-info').value.trim();
             appState.config.adminPin = document.getElementById('set-admin-pin').value.trim();
 
+            appState.config.infoLocationTitle = document.getElementById('set-info-loc-title').value.trim();
+            appState.config.infoLocationDesc = document.getElementById('set-info-loc-desc').value.trim();
+            appState.config.infoSecurityTitle = document.getElementById('set-info-sec-title').value.trim();
+            appState.config.infoSecurityDesc = document.getElementById('set-info-sec-desc').value.trim();
+            appState.config.infoPriceTitle = document.getElementById('set-info-prc-title').value.trim();
+            appState.config.infoPriceDesc = document.getElementById('set-info-prc-desc').value.trim();
+
+            const rawRules = document.getElementById('set-kost-rules').value;
+            appState.config.rules = rawRules.split('\n').map(r => r.trim()).filter(Boolean);
+
             saveState();
             updateBrandingUI();
+            renderGuestRules();
             closeModal('settings-modal');
-            showToast('Pengaturan & PIN kost berhasil diperbarui!', 'success');
+            showToast('Tampilan & Pengaturan Kost berhasil diperbarui!', 'success');
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // FEATURE: CHANGE OWNER PIN
+        function openChangePinModal() {
+            document.getElementById('pin-old').value = '';
+            document.getElementById('pin-new').value = '';
+            document.getElementById('pin-confirm').value = '';
+            document.getElementById('change-pin-modal').classList.remove('hidden');
+        }
+
+        function submitChangePin(e) {
+            e.preventDefault();
+            const oldPin = document.getElementById('pin-old').value.trim();
+            const newPin = document.getElementById('pin-new').value.trim();
+            const confirmPin = document.getElementById('pin-confirm').value.trim();
+
+            const currentPin = appState.config.adminPin || "1234";
+
+            if (oldPin !== currentPin) {
+                showToast('PIN Lama tidak cocok!', 'error');
+                return;
+            }
+
+            if (newPin.length < 4) {
+                showToast('PIN Baru minimal 4 karakter!', 'error');
+                return;
+            }
+
+            if (newPin !== confirmPin) {
+                showToast('Konfirmasi PIN Baru tidak cocok!', 'error');
+                return;
+            }
+
+            appState.config.adminPin = newPin;
+            saveState();
+            closeModal('change-pin-modal');
+            showToast('PIN Keamanan Pemilik berhasil diperbarui!', 'success');
         }
 
         function showToast(msg, type = 'info') {
